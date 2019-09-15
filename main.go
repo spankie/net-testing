@@ -53,6 +53,8 @@ func (u *UDPServer) Run() (*net.UDPAddr, error) {
 
 func (u *UDPServer) handleServer(laddr *net.UDPAddr) {
 	var err error
+	// refactor this incase of multiple NLB connection.
+	// there is a race condition here...
 	u.server, err = net.ListenUDP("udp", laddr)
 	if err != nil {
 		log.Println(err)
@@ -63,6 +65,7 @@ func (u *UDPServer) handleServer(laddr *net.UDPAddr) {
 		if err != nil {
 			log.Printf("error occured: %v", err)
 		}
+		u.Close()
 	}()
 
 }
