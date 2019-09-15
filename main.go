@@ -16,6 +16,10 @@ type Server interface {
 	Close() error
 }
 
+func logDetails(data []byte) {
+	log.Printf("Data recieved: \n%v", data)
+}
+
 // NewServer creates a new Server using given protocol
 // and addr.
 func NewServer(protocol, addr string) (Server, error) {
@@ -57,7 +61,7 @@ func (u *UDPServer) handleServer(laddr *net.UDPAddr) {
 	// there is a race condition here...
 	u.server, err = net.ListenUDP("udp", laddr)
 	if err != nil {
-		log.Println(err)
+		log.Fatalf("listening error: %v", err)
 		return
 	}
 	go func() {
@@ -82,8 +86,8 @@ func (u *UDPServer) handleConnections() error {
 		if conn == nil {
 			continue
 		}
-
-		go u.handleConnection(conn, buf[:n])
+		logDetails(buf[:n])
+		// go u.handleConnection(conn, buf[:n])
 	}
 	return err
 }
